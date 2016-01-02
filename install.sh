@@ -30,17 +30,17 @@ main() {
 
   # Install required packages
   printf "${BLUE}Installing necessary packages...${NORMAL}\n"
-  apt-get install -y git python-pip python-nautilus || {
+  apt-get install -y git python-pip python-nemo || {
     printf "Error: failed to install required packages\n"
     exit 1
   }
 
   # Clone the repository if called from the web and start operations from there
   if [ ! -f "nautilus-subliminal.py" ]; then
-    printf "${BLUE}Cloning subliminal-nautilus...${NORMAL}\n"
+    printf "${BLUE}Cloning subliminal-nautilus (nemo branch)...${NORMAL}\n"
     TMP_DIR=$(mktemp -d)
-    git clone --depth=1 https://github.com/Diaoul/nautilus-subliminal.git ${TMP_DIR} || {
-      printf "Error: git clone of subliminal-nautilus repo failed\n"
+    git clone -b nemo --depth=1 https://github.com/Diaoul/nautilus-subliminal.git ${TMP_DIR} || {
+      printf "Error: git clone of subliminal-nautilus repo (nemo branch) failed\n"
       exit 1
     }
     pushd ${TMP_DIR}
@@ -55,13 +55,13 @@ main() {
 
   # Install extension
   printf "${BLUE}Installing extension...${NORMAL}\n"
-  install -m 755 nautilus-subliminal.py /usr/share/nautilus-python/extensions/
-  install -d /usr/share/nautilus-python/extensions/subliminal
-  cp -r ui /usr/share/nautilus-python/extensions/subliminal/
+  install -m 755 nautilus-subliminal.py /usr/share/nemo-python/extensions/nemo-subliminal.py
+  install -d /usr/share/nemo-python/extensions/subliminal
+  cp -r ui /usr/share/nemo-python/extensions/subliminal/
   for filepath in i18n/*.po; do
     filename=$(basename "$filepath")
-    install -d /usr/share/nautilus-python/extensions/subliminal/locale/${filename##*.}/LC_MESSAGES/
-    msgfmt ${filepath} -o /usr/share/nautilus-python/extensions/subliminal/locale/${filename##*.}/LC_MESSAGES/subliminal.mo
+    install -d /usr/share/nemo-python/extensions/subliminal/locale/${filename##*.}/LC_MESSAGES/
+    msgfmt ${filepath} -o /usr/share/nemo-python/extensions/subliminal/locale/${filename##*.}/LC_MESSAGES/subliminal.mo
   done
 
   # Clean up
@@ -72,7 +72,7 @@ main() {
 
   printf "${GREEN}"
   echo ''
-  echo 'Subliminal extension for Nautilus is now installed!'
+  echo 'Subliminal extension for Nemo is now installed!'
   echo ''
   echo 'Please visit https://github.com/Diaoul/nautilus-subliminal for any issue'
   echo ''
