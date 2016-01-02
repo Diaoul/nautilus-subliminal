@@ -158,11 +158,8 @@ class SubliminalExtension(GObject.GObject, Nautilus.MenuProvider):
         return []
 
     def choose_callback(self, menuitem, files):
-        # scan and check the video
-        video = scan_video(files[0].get_location().get_path(), subtitles=True,
-                           embedded_subtitles=self.config.embedded_subtitles)
-        if not check_video(video, languages=self.config.languages, undefined=self.config.single):
-            return
+        # scan the video
+        video = scan_video(files[0].get_location().get_path(), subtitles=False, embedded_subtitles=False)
 
         # list subtitles
         with ProviderPool(providers=self.config.providers, provider_configs=self.config.provider_configs) as pool:
