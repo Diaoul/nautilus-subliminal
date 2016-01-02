@@ -8,7 +8,7 @@ import os
 import threading
 
 from babelfish import Language
-from gi.repository import GObject, Gtk, Nautilus
+from gi.repository import GObject, Gtk, Nemo as Nautilus
 from subliminal import (VIDEO_EXTENSIONS, AsyncProviderPool, __copyright__, __version__, check_video, compute_score,
                         get_scores, provider_manager, refine, refiner_manager, region, save_subtitles, scan_video,
                         scan_videos)
