@@ -43,7 +43,7 @@ main() {
       printf "Error: git clone of subliminal-nautilus repo failed\n"
       exit 1
     }
-    pusd ${TMP_DIR}
+    pushd ${TMP_DIR}
   fi
 
   # Install requirements
