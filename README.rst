@@ -2,6 +2,8 @@ Subliminal Nautilus
 ===================
 Subliminal_ integration within your favorite file manager.
 
+*You prefer Nemo?* Check out the `nemo branch`_!
+
 Screenshots
 -----------
 .. image:: http://i.imgur.com/NCwELpB.png
@@ -26,3 +28,4 @@ Or using curl::
 It will take care of installing the appropriate dependencies for you.
 
 .. _Subliminal: https://github.com/Diaoul/subliminal
+.. _`nemo branch`: https://github.com/Diaoul/nautilus-subliminal/tree/nemo
