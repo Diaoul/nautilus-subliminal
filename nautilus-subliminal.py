@@ -5,6 +5,7 @@ from datetime import timedelta
 import locale
 from locale import gettext as _
 import os
+import threading
 
 from babelfish import Language
 from gi.repository import GObject, Gtk, Nautilus
@@ -32,12 +33,15 @@ class ChooseHandler(object):
     :type video: :class:`~subliminal.video.Video`
     :param subtitles: the available of subtitles.
     :type subtitles: list of :class:`~subliminal.subtitle.Subtitle`
+    :param spinner: the spinner to show during download.
+    :type spinner: :class:`GtkSpinner`
 
     """
-    def __init__(self, config, video, subtitles):
+    def __init__(self, config, video, subtitles, spinner):
         self.config = config
         self.video = video
         self.subtitles = {s.provider_name + '-' + s.id: s for s in subtitles}
+        self.spinner = spinner
 
     def on_subtitles_treeview_row_activated(self, treeview, path, view_column):
         model = treeview.get_model()
@@ -50,15 +54,24 @@ class ChooseHandler(object):
         # get the subtitle object
         subtitle = self.subtitles[model.get_value(iter, 3).lower() + '-' + model.get_value(iter, 0)]
 
-        # download the subtitle
-        with ProviderPool(providers=self.config.providers, provider_configs=self.config.provider_configs) as pool:
-            pool.download_subtitle(subtitle)
+        # start the spinner
+        self.spinner.start()
 
-        # save the subtitle
-        save_subtitles(self.video, [subtitle], single=self.config.single)
+        def _download_subtitle():
+            # download the subtitle
+            with ProviderPool(providers=self.config.providers, provider_configs=self.config.provider_configs) as pool:
+                pool.download_subtitle(subtitle)
 
-        # mark the subtitle as downloaded
-        model.set_value(iter, 6, True)
+            # save the subtitle
+            save_subtitles(self.video, [subtitle], single=self.config.single)
+
+            # mark the subtitle as downloaded
+            model.set_value(iter, 6, True)
+
+            # stop the spinner
+            self.spinner.stop()
+
+        threading.Thread(target=_download_subtitle).start()
 
     def on_subtitles_scrolledwindow_delete_event(self, *args):
         Gtk.main_quit(*args)
@@ -161,10 +174,6 @@ class SubliminalExtension(GObject.GObject, Nautilus.MenuProvider):
         # scan the video
         video = scan_video(files[0].get_location().get_path(), subtitles=False, embedded_subtitles=False)
 
-        # list subtitles
-        with ProviderPool(providers=self.config.providers, provider_configs=self.config.provider_configs) as pool:
-            subtitles = pool.list_subtitles(video, self.config.languages)
-
         # load the interface
         builder = Gtk.Builder()
         builder.set_translation_domain('subliminal')
@@ -174,20 +183,34 @@ class SubliminalExtension(GObject.GObject, Nautilus.MenuProvider):
         video_filename = builder.get_object('video_filename_label')
         video_filename.set_text(files[0].get_name())
 
-        # fill the subtitle liststore
-        subtitle_liststore = builder.get_object('subtitle_liststore')
-        for s in subtitles:
-            matches = s.get_matches(video, hearing_impaired=self.config.hearing_impaired)
-            scaled_score = compute_score(matches, video)
-            if s.hearing_impaired == self.config.hearing_impaired:
-                scaled_score -= video.scores['hearing_impaired']
-            scaled_score *= 100 / video.scores['hash']
-            subtitle_liststore.append([s.id, nice_language(s.language), scaled_score, s.provider_name.capitalize(),
-                                       s.hearing_impaired, s.page_link, False])
-        subtitle_liststore.set_sort_column_id(2, Gtk.SortType.DESCENDING)
+        # start the spinner
+        spinner = builder.get_object('spinner')
+        spinner.start()
 
-        # connect signals
-        builder.connect_signals(ChooseHandler(self.config, video, subtitles))
+        def _list_subtitles():
+            # list subtitles
+            with ProviderPool(providers=self.config.providers, provider_configs=self.config.provider_configs) as pool:
+                subtitles = pool.list_subtitles(video, self.config.languages)
+
+            # fill the subtitle liststore
+            subtitle_liststore = builder.get_object('subtitle_liststore')
+            for s in subtitles:
+                matches = s.get_matches(video, hearing_impaired=self.config.hearing_impaired)
+                scaled_score = compute_score(matches, video)
+                if s.hearing_impaired == self.config.hearing_impaired:
+                    scaled_score -= video.scores['hearing_impaired']
+                scaled_score *= 100 / video.scores['hash']
+                subtitle_liststore.append([s.id, nice_language(s.language), scaled_score, s.provider_name.capitalize(),
+                                           s.hearing_impaired, s.page_link, False])
+            subtitle_liststore.set_sort_column_id(2, Gtk.SortType.DESCENDING)
+
+            # stop the spinner
+            spinner.stop()
+
+            # connect signals
+            builder.connect_signals(ChooseHandler(self.config, video, subtitles, spinner))
+
+        threading.Thread(target=_list_subtitles).start()
 
         # display window
         window = builder.get_object('subtitle_window')
