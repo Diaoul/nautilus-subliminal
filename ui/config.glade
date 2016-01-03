@@ -107,48 +107,60 @@ Author: Antoine Bertin
         <property name="can_focus">True</property>
         <property name="show_border">False</property>
         <child>
-          <object class="GtkScrolledWindow" id="language_scrolledwindow">
+          <object class="GtkBox" id="language_box">
             <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="hscrollbar_policy">never</property>
-            <property name="min_content_height">100</property>
+            <property name="can_focus">False</property>
+            <property name="orientation">vertical</property>
             <child>
-              <object class="GtkTreeView" id="language_treeview">
+              <object class="GtkScrolledWindow" id="language_scrolledwindow">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="model">language_liststore</property>
-                <child internal-child="selection">
-                  <object class="GtkTreeSelection" id="language_treeselection">
-                    <property name="mode">multiple</property>
-                    <signal name="changed" handler="on_languages_treeview_selection_changed" swapped="no"/>
-                  </object>
-                </child>
+                <property name="hscrollbar_policy">never</property>
+                <property name="min_content_height">100</property>
                 <child>
-                  <object class="GtkTreeViewColumn" id="language_name_treeviewcolumn">
-                    <property name="min_width">250</property>
-                    <property name="title" translatable="yes">Name</property>
-                    <property name="expand">True</property>
-                    <child>
-                      <object class="GtkCellRendererText" id="language_name_cellrenderertext"/>
-                      <attributes>
-                        <attribute name="text">0</attribute>
-                      </attributes>
+                  <object class="GtkTreeView" id="language_treeview">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="model">language_liststore</property>
+                    <child internal-child="selection">
+                      <object class="GtkTreeSelection" id="language_treeselection">
+                        <property name="mode">multiple</property>
+                        <signal name="changed" handler="on_languages_treeview_selection_changed" swapped="no"/>
+                      </object>
                     </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkTreeViewColumn" id="language_code_treeviewcolumn">
-                    <property name="min_width">100</property>
-                    <property name="title" translatable="yes">Code</property>
                     <child>
-                      <object class="GtkCellRendererText" id="language_code_cellrenderertext"/>
-                      <attributes>
-                        <attribute name="text">1</attribute>
-                      </attributes>
+                      <object class="GtkTreeViewColumn" id="language_name_treeviewcolumn">
+                        <property name="min_width">250</property>
+                        <property name="title" translatable="yes">Name</property>
+                        <property name="expand">True</property>
+                        <child>
+                          <object class="GtkCellRendererText" id="language_name_cellrenderertext"/>
+                          <attributes>
+                            <attribute name="text">0</attribute>
+                          </attributes>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkTreeViewColumn" id="language_code_treeviewcolumn">
+                        <property name="min_width">100</property>
+                        <property name="title" translatable="yes">Code</property>
+                        <child>
+                          <object class="GtkCellRendererText" id="language_code_cellrenderertext"/>
+                          <attributes>
+                            <attribute name="text">1</attribute>
+                          </attributes>
+                        </child>
+                      </object>
                     </child>
                   </object>
                 </child>
               </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
             </child>
           </object>
         </child>
@@ -163,48 +175,60 @@ Author: Antoine Bertin
           </packing>
         </child>
         <child>
-          <object class="GtkScrolledWindow" id="provider_scrolledwindow">
+          <object class="GtkBox" id="provider_box">
             <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="hscrollbar_policy">never</property>
-            <property name="min_content_height">100</property>
+            <property name="can_focus">False</property>
+            <property name="orientation">vertical</property>
             <child>
-              <object class="GtkTreeView" id="provider_treeview">
+              <object class="GtkScrolledWindow" id="provider_scrolledwindow">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="model">provider_liststore</property>
-                <child internal-child="selection">
-                  <object class="GtkTreeSelection" id="provider_treeselection">
-                    <property name="mode">multiple</property>
-                    <signal name="changed" handler="on_providers_treeview_selection_changed" swapped="no"/>
-                  </object>
-                </child>
+                <property name="hscrollbar_policy">never</property>
+                <property name="min_content_height">100</property>
                 <child>
-                  <object class="GtkTreeViewColumn" id="provider_name_treeviewcolumn">
-                    <property name="min_width">140</property>
-                    <property name="title" translatable="yes">Name</property>
-                    <child>
-                      <object class="GtkCellRendererText" id="provider_name_cellrenderertext"/>
-                      <attributes>
-                        <attribute name="text">0</attribute>
-                      </attributes>
+                  <object class="GtkTreeView" id="provider_treeview">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="model">provider_liststore</property>
+                    <child internal-child="selection">
+                      <object class="GtkTreeSelection" id="provider_treeselection">
+                        <property name="mode">multiple</property>
+                        <signal name="changed" handler="on_providers_treeview_selection_changed" swapped="no"/>
+                      </object>
                     </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkTreeViewColumn" id="provider_configuration_treeviewcolumn">
-                    <property name="min_width">250</property>
-                    <property name="title" translatable="yes">Configuration</property>
-                    <property name="expand">True</property>
                     <child>
-                      <object class="GtkCellRendererText" id="provider_configuration_cellrenderertext"/>
-                      <attributes>
-                        <attribute name="text">1</attribute>
-                      </attributes>
+                      <object class="GtkTreeViewColumn" id="provider_name_treeviewcolumn">
+                        <property name="min_width">140</property>
+                        <property name="title" translatable="yes">Name</property>
+                        <child>
+                          <object class="GtkCellRendererText" id="provider_name_cellrenderertext"/>
+                          <attributes>
+                            <attribute name="text">0</attribute>
+                          </attributes>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkTreeViewColumn" id="provider_configuration_treeviewcolumn">
+                        <property name="min_width">250</property>
+                        <property name="title" translatable="yes">Configuration</property>
+                        <property name="expand">True</property>
+                        <child>
+                          <object class="GtkCellRendererText" id="provider_configuration_cellrenderertext"/>
+                          <attributes>
+                            <attribute name="text">1</attribute>
+                          </attributes>
+                        </child>
+                      </object>
                     </child>
                   </object>
                 </child>
               </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
             </child>
           </object>
           <packing>
