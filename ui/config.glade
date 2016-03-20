@@ -97,6 +97,12 @@ Author: Antoine Bertin
       <column type="gchararray"/>
     </columns>
   </object>
+  <object class="GtkListStore" id="refiner_liststore">
+    <columns>
+      <!-- column-name name -->
+      <column type="gchararray"/>
+    </columns>
+  </object>
   <object class="GtkWindow" id="config_window">
     <property name="can_focus">False</property>
     <property name="title">Subliminal - Configuration</property>
@@ -247,6 +253,67 @@ Author: Antoine Bertin
           </packing>
         </child>
         <child>
+          <object class="GtkBox" id="refiner_box">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkScrolledWindow" id="refiner_scrolledwindow">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="hscrollbar_policy">never</property>
+                <property name="min_content_height">100</property>
+                <child>
+                  <object class="GtkTreeView" id="refiner_treeview">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="model">refiner_liststore</property>
+                    <property name="reorderable">True</property>
+                    <property name="search_column">5</property>
+                    <child internal-child="selection">
+                      <object class="GtkTreeSelection" id="refiner_treeselection">
+                        <property name="mode">multiple</property>
+                        <signal name="changed" handler="on_refiners_treeview_selection_changed" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkTreeViewColumn" id="refiner_name_treeviewcolumn">
+                        <property name="min_width">140</property>
+                        <property name="title" translatable="yes">Name</property>
+                        <child>
+                          <object class="GtkCellRendererText" id="refiner_name_cellrenderertext"/>
+                          <attributes>
+                            <attribute name="text">0</attribute>
+                          </attributes>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="position">2</property>
+          </packing>
+        </child>
+        <child type="tab">
+          <object class="GtkLabel" id="refiner_label">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">Refiners</property>
+          </object>
+          <packing>
+            <property name="position">2</property>
+            <property name="tab_fill">False</property>
+          </packing>
+        </child>
+        <child>
           <object class="GtkGrid" id="general_grid">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
@@ -390,7 +457,7 @@ when scanning folders</property>
             </child>
           </object>
           <packing>
-            <property name="position">2</property>
+            <property name="position">3</property>
           </packing>
         </child>
         <child type="tab">
@@ -400,7 +467,7 @@ when scanning folders</property>
             <property name="label" translatable="yes">General</property>
           </object>
           <packing>
-            <property name="position">2</property>
+            <property name="position">3</property>
             <property name="tab_fill">False</property>
           </packing>
         </child>
@@ -414,7 +481,7 @@ when scanning folders</property>
             </child>
           </object>
           <packing>
-            <property name="position">3</property>
+            <property name="position">4</property>
           </packing>
         </child>
         <child type="tab">
@@ -424,7 +491,7 @@ when scanning folders</property>
             <property name="label" translatable="yes">About</property>
           </object>
           <packing>
-            <property name="position">3</property>
+            <property name="position">4</property>
             <property name="tab_fill">False</property>
           </packing>
         </child>

@@ -9,9 +9,11 @@ import threading
 
 from babelfish import Language
 from gi.repository import GObject, Gtk, Nautilus
-from subliminal import (VIDEO_EXTENSIONS, ProviderPool, __copyright__, __version__, check_video, compute_score,
-                        provider_manager, region, save_subtitles, scan_video, scan_videos)
-from subliminal.cli import Config, MutexLock, app_dir, cache_file, config_file
+from subliminal import (VIDEO_EXTENSIONS, AsyncProviderPool, __copyright__, __version__, check_video, compute_score,
+                        get_scores, provider_manager, refine, refiner_manager, region, save_subtitles, scan_video,
+                        scan_videos)
+from subliminal.cli import Config, MutexLock, cache_file, config_file, dirs
+from subliminal.core import search_external_subtitles
 
 locale.bindtextdomain('subliminal', os.path.join(os.path.dirname(__file__), 'subliminal', 'locale'))
 locale.textdomain('subliminal')
@@ -59,7 +61,8 @@ class ChooseHandler(object):
 
         def _download_subtitle():
             # download the subtitle
-            with ProviderPool(providers=self.config.providers, provider_configs=self.config.provider_configs) as pool:
+            with AsyncProviderPool(providers=self.config.providers,
+                                   provider_configs=self.config.provider_configs) as pool:
                 pool.download_subtitle(subtitle)
 
             # save the subtitle
@@ -102,6 +105,11 @@ class ConfigHandler(object):
         if providers:
             self.config.providers = providers
 
+    def on_refiners_treeview_selection_changed(self, selection):
+        model, paths = selection.get_selected_rows()
+        refiners = [model.get_value(model.get_iter(r), 0).lower() for r in paths]
+        self.config.refiners = refiners
+
     def on_single_switch_active_notify(self, switch, gparam):
         self.config.single = switch.get_active()
 
@@ -126,18 +134,20 @@ class SubliminalExtension(GObject.GObject, Nautilus.MenuProvider):
     def __init__(self):
         # create app directory
         try:
-            os.makedirs(app_dir)
+            os.makedirs(dirs.user_cache_dir)
+            os.makedirs(dirs.user_config_dir)
         except OSError:
-            if not os.path.isdir(app_dir):
+            if not os.path.isdir(dirs.user_cache_dir) or not os.path.isdir(dirs.user_config_dir):
                 raise
 
         # open config file
-        self.config = Config(os.path.join(app_dir, config_file))
+        self.config = Config(os.path.join(dirs.user_config_dir, config_file))
         self.config.read()
 
         # configure cache
         region.configure('dogpile.cache.dbm', expiration_time=timedelta(days=30),
-                         arguments={'filename': os.path.join(app_dir, cache_file), 'lock_factory': MutexLock})
+                         arguments={'filename': os.path.join(dirs.user_cache_dir, cache_file),
+                                    'lock_factory': MutexLock})
 
     def get_file_items(self, window, files):
         # lightweight filter on file type and extension
@@ -172,7 +182,9 @@ class SubliminalExtension(GObject.GObject, Nautilus.MenuProvider):
 
     def choose_callback(self, menuitem, files):
         # scan the video
-        video = scan_video(files[0].get_location().get_path(), subtitles=False, embedded_subtitles=False)
+        video = scan_video(files[0].get_location().get_path())
+        refine(video, episode_refiners=self.config.refiners, movie_refiners=self.config.refiners,
+               embedded_subtitles=False)
 
         # load the interface
         builder = Gtk.Builder()
@@ -189,17 +201,18 @@ class SubliminalExtension(GObject.GObject, Nautilus.MenuProvider):
 
         def _list_subtitles():
             # list subtitles
-            with ProviderPool(providers=self.config.providers, provider_configs=self.config.provider_configs) as pool:
+            with AsyncProviderPool(providers=self.config.providers,
+                                   provider_configs=self.config.provider_configs) as pool:
                 subtitles = pool.list_subtitles(video, self.config.languages)
 
             # fill the subtitle liststore
             subtitle_liststore = builder.get_object('subtitle_liststore')
             for s in subtitles:
-                matches = s.get_matches(video, hearing_impaired=self.config.hearing_impaired)
-                scaled_score = compute_score(matches, video)
+                scaled_score = compute_score(s, video)
+                scores = get_scores(video)
                 if s.hearing_impaired == self.config.hearing_impaired:
-                    scaled_score -= video.scores['hearing_impaired']
-                scaled_score *= 100 / video.scores['hash']
+                    scaled_score -= scores['hearing_impaired']
+                scaled_score *= 100 / scores['hash']
                 subtitle_liststore.append([s.id, nice_language(s.language), scaled_score, s.provider_name.capitalize(),
                                            s.hearing_impaired, s.page_link, False])
             subtitle_liststore.set_sort_column_id(2, Gtk.SortType.DESCENDING)
@@ -228,32 +241,37 @@ class SubliminalExtension(GObject.GObject, Nautilus.MenuProvider):
             # directories
             if f.is_directory():
                 try:
-                    scanned_videos = scan_videos(f.get_location().get_path(), subtitles=True,
-                                                 embedded_subtitles=self.config.embedded_subtitles)
+                    scanned_videos = scan_videos(f.get_location().get_path())
                 except:
                     continue
                 for video in scanned_videos:
                     if check_video(video, languages=self.config.languages, age=self.config.age,
                                    undefined=self.config.single):
+                        video.subtitle_languages |= set(search_external_subtitles(video.name).values())
+                        refine(video, episode_refiners=self.config.refiners, movie_refiners=self.config.refiners,
+                               embedded_subtitles=self.config.embedded_subtitles)
                         videos.append(video)
                 continue
 
             # other inputs
             try:
-                video = scan_video(f.get_location().get_path(), subtitles=True,
-                                   embedded_subtitles=self.config.embedded_subtitles)
+                video = scan_video(f.get_location().get_path())
             except:
                 continue
             if check_video(video, languages=self.config.languages, undefined=self.config.single):
+                video.subtitle_languages |= set(search_external_subtitles(video.name).values())
+                refine(video, episode_refiners=self.config.refiners, movie_refiners=self.config.refiners,
+                       embedded_subtitles=self.config.embedded_subtitles)
                 videos.append(video)
 
         # download best subtitles
         downloaded_subtitles = defaultdict(list)
-        with ProviderPool(providers=self.config.providers, provider_configs=self.config.provider_configs) as pool:
+        with AsyncProviderPool(providers=self.config.providers, provider_configs=self.config.provider_configs) as pool:
             for v in videos:
+                scores = get_scores(v)
                 subtitles = pool.download_best_subtitles(
                     pool.list_subtitles(v, self.config.languages - v.subtitle_languages),
-                    v, self.config.languages, min_score=v.scores['hash'] * self.config.min_score / 100,
+                    v, self.config.languages, min_score=scores['hash'] * self.config.min_score / 100,
                     hearing_impaired=self.config.hearing_impaired, only_one=self.config.single
                 )
                 downloaded_subtitles[v] = subtitles
@@ -298,6 +316,17 @@ class SubliminalExtension(GObject.GObject, Nautilus.MenuProvider):
         for provider in provider_liststore:
             if provider[0].lower() in self.config.providers:
                 provider_treeselection.select_iter(provider.iter)
+
+        # fill the refiner liststore
+        refiner_liststore = builder.get_object('refiner_liststore')
+        for refiner in sorted([r.name for r in refiner_manager], key=lambda r: (r not in self.config.refiners, r)):
+            refiner_liststore.append([refiner.capitalize()])
+
+        # set refiner selection
+        refiner_treeselection = builder.get_object('refiner_treeselection')
+        for refiner in refiner_liststore:
+            if refiner[0].lower() in self.config.refiners:
+                refiner_treeselection.select_iter(refiner.iter)
 
         # set single state
         single_switch = builder.get_object('single_switch')
