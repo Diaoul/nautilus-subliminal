@@ -9,7 +9,7 @@ Screenshots
 .. image:: http://i.imgur.com/NCwELpB.png
    :alt: Menu
 
-.. image:: http://i.imgur.com/Y58ky88.png
+.. image:: http://i.imgur.com/rxh0st0.png
    :alt: Configuration
 
 .. image:: http://i.imgur.com/qem3DGj.png
