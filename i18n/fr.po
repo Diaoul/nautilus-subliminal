@@ -1,13 +1,13 @@
 # Subliminal language file
 # 
 # Translators:
-# Antoine Bertin <diaoulael@gmail.com>, 2015
+# Antoine Bertin <diaoulael@gmail.com>, 2015-2016
 msgid ""
 msgstr ""
 "Project-Id-Version: subliminal\n"
 "Report-Msgid-Bugs-To: diaoulael@gmail.com\n"
-"POT-Creation-Date: 2015-10-30 18:54+0100\n"
-"PO-Revision-Date: 2015-08-27 14:44+0000\n"
+"POT-Creation-Date: 2016-03-20 23:50+0100\n"
+"PO-Revision-Date: 2016-03-20 22:55+0000\n"
 "Last-Translator: Antoine Bertin <diaoulael@gmail.com>\n"
 "Language-Team: French (http://www.transifex.com/subliminal/subliminal/language/fr/)\n"
 "MIME-Version: 1.0\n"
@@ -41,38 +41,42 @@ msgid "Providers"
 msgstr "Fournisseurs"
 
 #: ui/config.glade.h:7
+msgid "Refiners"
+msgstr "Affineurs"
+
+#: ui/config.glade.h:8
 msgid "Do not use this unless your media player requires it"
 msgstr "Ne pas utiliser à moins que le lecteur multimédia ne le requiert"
 
-#: ui/config.glade.h:8
+#: ui/config.glade.h:9
 msgid ""
 "Save subtitle without language code in the filename\n"
 "i.e. use .srt extension"
 msgstr "Sauvegarder les sous-titres sans code de langue dans\nle nom du fichier, c.-a-d. utiliser .srt comme extension"
 
-#: ui/config.glade.h:10
+#: ui/config.glade.h:11
 msgid "Ignore videos with embedded subtitles"
 msgstr "Ignorer les vidéos avec des sous-titres intégrés"
 
-#: ui/config.glade.h:11
+#: ui/config.glade.h:12
 msgid ""
 "Ignore videos older than this number of days\n"
 "when scanning folders"
 msgstr "Ignorer les vidéos plus vieilles que ce nombre\nde jours lors du scan de dossiers"
 
-#: ui/config.glade.h:13
+#: ui/config.glade.h:14
 msgid "Prefer hearing impaired subtitles"
 msgstr "Préférer les sous-titres pour malentendants"
 
-#: ui/config.glade.h:14
+#: ui/config.glade.h:15
 msgid "Minimum matching score"
 msgstr "Score de correspondance minimum"
 
-#: ui/config.glade.h:15
+#: ui/config.glade.h:16
 msgid "General"
 msgstr "Général"
 
-#: ui/config.glade.h:16
+#: ui/config.glade.h:17
 msgid "About"
 msgstr "À propos"
 
@@ -104,14 +108,14 @@ msgstr "Malentendant"
 msgid "Downloaded"
 msgstr "Téléchargé"
 
-#: nautilus-subliminal.py:141
+#: nautilus-subliminal.py:164
 msgid "Choose subtitles"
 msgstr "Choisir les sous-titres"
 
-#: nautilus-subliminal.py:146
+#: nautilus-subliminal.py:169
 msgid "Download subtitles"
 msgstr "Télécharger les sous-titres"
 
-#: nautilus-subliminal.py:151
+#: nautilus-subliminal.py:174
 msgid "Configure..."
 msgstr "Configurer..."
