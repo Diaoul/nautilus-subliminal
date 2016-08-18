@@ -15,7 +15,7 @@ Screenshots
 .. image:: http://i.imgur.com/qem3DGj.png
    :alt: Choose subtitles
 
-Install
+Install (Ubuntu)
 -------
 Just run this command in a terminal::
 
@@ -24,6 +24,16 @@ Just run this command in a terminal::
 Or using curl::
 
    curl -fsSL https://raw.githubusercontent.com/Diaoul/nautilus-subliminal/master/install.sh -O - | sudo sh
+
+Install (Solus)
+-------
+Just run this command in a terminal::
+
+    wget https://raw.githubusercontent.com/Diaoul/nautilus-subliminal/master/install-solus.sh -O - | sudo sh
+
+Or using curl::
+
+   curl -fsSL https://raw.githubusercontent.com/Diaoul/nautilus-subliminal/master/install-solus.sh -O - | sudo sh
 
 It will take care of installing the appropriate dependencies for you.
 
