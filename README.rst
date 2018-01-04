@@ -3,6 +3,7 @@ Subliminal Nemo
 Subliminal_ integration within your favorite file manager.
 
 *You prefer Nautilus?* Check out the `master branch`_!
+*You prefer Caja?* Check out the `caja branch`_!
 
 Screenshots
 -----------
@@ -29,3 +30,4 @@ It will take care of installing the appropriate dependencies for you.
 
 .. _Subliminal: https://github.com/Diaoul/subliminal
 .. _`master branch`: https://github.com/Diaoul/nautilus-subliminal/tree/master
+.. _`caja branch`: https://github.com/Diaoul/nautilus-subliminal/tree/caja
