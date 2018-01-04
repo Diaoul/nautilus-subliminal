@@ -1,7 +1,8 @@
-Subliminal Nautilus
-===================
+Subliminal Caja
+===============
 Subliminal_ integration within your favorite file manager.
 
+*You prefer Nautilus?* Check out the `master branch`_!
 *You prefer Nemo?* Check out the `nemo branch`_!
 
 Screenshots
@@ -19,13 +20,14 @@ Install
 -------
 Just run this command in a terminal::
 
-    wget https://raw.githubusercontent.com/Diaoul/nautilus-subliminal/master/install.sh -O - | sudo sh
+    wget https://raw.githubusercontent.com/Diaoul/nautilus-subliminal/caja/install.sh -O - | sudo sh
 
 Or using curl::
 
-   curl -fsSL https://raw.githubusercontent.com/Diaoul/nautilus-subliminal/master/install.sh -O - | sudo sh
+   curl -fsSL https://raw.githubusercontent.com/Diaoul/nautilus-subliminal/caja/install.sh -O - | sudo sh
 
 It will take care of installing the appropriate dependencies for you.
 
 .. _Subliminal: https://github.com/Diaoul/subliminal
+.. _`master branch`: https://github.com/Diaoul/nautilus-subliminal/tree/master
 .. _`nemo branch`: https://github.com/Diaoul/nautilus-subliminal/tree/nemo
