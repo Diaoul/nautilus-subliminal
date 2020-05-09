@@ -60,8 +60,9 @@ main() {
   cp -r ui /usr/share/nautilus-python/extensions/subliminal/
   for filepath in i18n/*.po; do
     filename=$(basename "$filepath")
-    install -d /usr/share/nautilus-python/extensions/subliminal/locale/${filename##*.}/LC_MESSAGES/
-    msgfmt ${filepath} -o /usr/share/nautilus-python/extensions/subliminal/locale/${filename##*.}/LC_MESSAGES/subliminal.mo
+    language=${filename%%.po}
+    install -d /usr/share/nautilus-python/extensions/subliminal/locale/${language}/LC_MESSAGES/
+    msgfmt ${filepath} -o /usr/share/nautilus-python/extensions/subliminal/locale/${language}/LC_MESSAGES/subliminal.mo
   done
 
   # Clean up
