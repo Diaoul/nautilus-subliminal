@@ -30,7 +30,7 @@ main() {
 
   # Install required packages
   printf "${BLUE}Installing necessary packages...${NORMAL}\n"
-  apt-get install -y git python-pip python-nemo || {
+  apt-get install -y git python3-pip nemo-python || {
     printf "Error: failed to install required packages\n"
     exit 1
   }
@@ -48,7 +48,7 @@ main() {
 
   # Install requirements
   printf "${BLUE}Installing python requirements...${NORMAL}\n"
-  pip install --upgrade -r requirements.txt || {
+  pip3 install --upgrade -r requirements.txt || {
     printf "Error: failed to install requirements\n"
     exit 1
   }
