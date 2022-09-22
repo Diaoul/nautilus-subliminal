@@ -8,6 +8,11 @@ import os
 import threading
 
 from babelfish import Language
+
+import gi
+gi.require_version("Gtk", "3.0")
+gi.require_version("Nautilus", "3.0")
+
 from gi.repository import GObject, Gtk, Nautilus
 from subliminal import (VIDEO_EXTENSIONS, AsyncProviderPool, __copyright__, __version__, check_video, compute_score,
                         get_scores, provider_manager, refine, refiner_manager, region, save_subtitles, scan_video,
@@ -134,8 +139,12 @@ class SubliminalExtension(GObject.GObject, Nautilus.MenuProvider):
     def __init__(self):
         # create app directory
         try:
-            os.makedirs(dirs.user_cache_dir)
-            os.makedirs(dirs.user_config_dir)
+            # cache directory would exist for existing subliminal users
+            # therefore we need the if-clause or else config directory is never created
+            if not os.path.isdir(dirs.user_cache_dir):
+                os.makedirs(dirs.user_cache_dir)
+            if not os.path.isdir(dirs.user_config_dir):
+                os.makedirs(dirs.user_config_dir)
         except OSError:
             if not os.path.isdir(dirs.user_cache_dir) or not os.path.isdir(dirs.user_config_dir):
                 raise
@@ -369,3 +378,4 @@ def nice_language(language):
     if language.country is not None:
         return '{name} ({country})'.format(name=language.name, country=language.country.name.capitalize())
     return language.name
+
