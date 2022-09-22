@@ -30,7 +30,7 @@ main() {
 
   # Install required packages
   printf "${BLUE}Installing necessary packages...${NORMAL}\n"
-  apt-get install -y git python-pip python-nautilus || {
+  apt-get install -y git python-pip python-nautilus || dnf install -y git python-pip nautilus-python || {
     printf "Error: failed to install required packages\n"
     exit 1
   }
